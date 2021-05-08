@@ -1,0 +1,363 @@
+//package cz.vutbr.project;
+//
+//import org.hibernate.Session;
+//import org.hibernate.SessionFactory;
+//import org.hibernate.Transaction;
+//import org.hibernate.boot.Metadata;
+//import org.hibernate.boot.MetadataSources;
+//import org.hibernate.boot.registry.StandardServiceRegistry;
+//import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+//
+//import javax.persistence.OrderBy;
+//import javax.persistence.Query;
+//import javax.persistence.criteria.CriteriaBuilder;
+//import javax.persistence.criteria.CriteriaQuery;
+//import javax.persistence.criteria.Root;
+//import javax.swing.*;
+//import java.awt.*;
+//import java.awt.event.ActionEvent;
+//import java.beans.PropertyChangeListener;
+//import java.beans.Transient;
+//import java.io.Serializable;
+//import java.text.ParseException;
+//import java.text.SimpleDateFormat;
+//import java.util.*;
+//import java.util.List;
+//
+//public class MainForm {
+//    private JPanel mainPanel;
+//    private JTabbedPane tabbedPane1;
+//    private JPanel AddStudent;
+//    private JTextField StudentFirstName;
+//    private JButton AddStudentButton;
+//    private JPanel AddTecher;
+//    private JTextField StudentLastName;
+//    private JTextField StudentDateOfBirth;
+//    private JTextField StudentStepend;
+//    private JTextField TeacherFirsName;
+//    private JTextField TeacherLastName;
+//    private JTextField TeacherDateOfBirth;
+//    private JTextField TeacherSalary;
+//    private JButton AddTeacherButton;
+//    private JTextField SearchName;
+//    private JButton FindButton;
+//    private JTextArea SearcTextArea;
+//    private JTextArea SubjectTextArea;
+//    private JButton SearchMarks;
+//    private JButton EditMark;
+//    private JTextField textField1;
+//    private JTextField textField2;
+//    private JTextArea StudentMarks;
+//    private JTextField textField3;
+//    private JTextField Name;
+//    private JButton SearchNameButton;
+//    private JTextField EditName;
+//    private JButton Edit;
+//    private JTextField EditLastName;
+//    private JTextField EditDateOfBirth;
+//    private JTextField EditMoney;
+//    private JComboBox comboBox1;
+//    private JComboBox comboBox2;
+//    private boolean problem = true;
+//
+//
+//    public MainForm() {
+//
+//
+//        StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
+//        Metadata metadata = new MetadataSources(registry).getMetadataBuilder().build();
+//        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
+//
+//        Session session = sessionFactory.openSession();
+//
+//
+//        String hqlStudents = "From " + Students.class.getSimpleName() + " ORDER BY " + "name ";
+//        String hqlTeachers = "From " + Teachers.class.getSimpleName() + " ORDER BY " + "name ";
+//        List<Students> studentsList = session.createQuery(hqlStudents).getResultList();
+//        List<Teachers> teachersList = session.createQuery(hqlTeachers).getResultList();
+//
+//        int i = 0;
+//        for (Students students : studentsList) {
+//            i++;
+//            comboBox1.addItem(students.getName() + " - " + students.getSurname() + "\n");
+//        }
+//        for (Teachers teachers : teachersList) {
+//            comboBox1.addItem(teachers.getName() + " - " + teachers.getSurname() + "\n");
+//        }
+//
+//
+//        //Добавление студента в базу
+//        AddStudentButton.addActionListener(new Action() {
+//            @Override
+//            public Object getValue(String key) {
+//                return null;
+//            }
+//
+//            @Override
+//            public void putValue(String key, Object value) {
+//
+//            }
+//
+//            @Override
+//            public void setEnabled(boolean b) {
+//
+//            }
+//
+//            @Override
+//            public boolean isEnabled() {
+//                return false;
+//            }
+//
+//            @Override
+//            public void addPropertyChangeListener(PropertyChangeListener listener) {
+//
+//            }
+//
+//            @Override
+//            public void removePropertyChangeListener(PropertyChangeListener listener) {
+//
+//            }
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//
+//                boolean createProblem = false;
+//
+//                List<Students> list = session.createQuery("FROM Students", Students.class).list();
+//                for (Students studentsList: list) {
+//                    if (StudentFirstName.getText().toLowerCase(Locale.ROOT).equals(studentsList.getName().toLowerCase(Locale.ROOT))) {
+//                        createProblem = true;
+//                        if (StudentLastName.getText().toLowerCase(Locale.ROOT).equals(studentsList.getSurname().toLowerCase(Locale.ROOT))) {
+//                            createProblem = true;
+//                            break;
+//                        } else {
+//                            createProblem = false;
+//                        }
+//                    }
+//                }
+//                    if (createProblem == false) {
+//                        session.getTransaction().begin();
+//
+//                        Students students = new Students();
+//
+//                        SimpleDateFormat format = new SimpleDateFormat();
+//                        format.applyPattern("dd-MM-yyyy");
+//                        Date docDate = null;
+//
+//
+//                        try {
+//                            docDate = format.parse(StudentDateOfBirth.getText());
+//
+//                            students.setName(StudentFirstName.getText().toUpperCase(Locale.ROOT));
+//                            students.setSurname(StudentLastName.getText().toUpperCase(Locale.ROOT));
+//                            students.setDateOfBirth(docDate);
+//                            students.setStipend(Integer.parseInt(StudentStepend.getText()));
+//                            Serializable id = session.save(students);
+//
+//
+//                        } catch (ParseException parseException) {
+//                            parseException.printStackTrace();
+//                            JOptionPane.showMessageDialog(mainPanel, "Wrong Date of Birth\n Must have format: dd-mm-yyyy", "Error!", JOptionPane.ERROR_MESSAGE);
+//
+//
+//                        }
+//                        session.getTransaction().commit();
+//
+//                    }
+//                    else {
+//                        JOptionPane.showMessageDialog(mainPanel, "Already exist", "Error!", JOptionPane.ERROR_MESSAGE);
+//                    }
+//                }
+//
+//
+//
+//        });
+//
+//        //Поиск людей в базе
+//        FindButton.addActionListener(new Action() {
+//            @Override
+//            public Object getValue(String key) {
+//                return null;
+//            }
+//
+//            @Override
+//            public void putValue(String key, Object value) {
+//
+//            }
+//
+//            @Override
+//            public void setEnabled(boolean b) {
+//
+//            }
+//
+//            @Override
+//            public boolean isEnabled() {
+//                return false;
+//            }
+//
+//            @Override
+//            public void addPropertyChangeListener(PropertyChangeListener listener) {
+//
+//            }
+//
+//            @Override
+//            public void removePropertyChangeListener(PropertyChangeListener listener) {
+//
+//            }
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//
+//                String hqlStudents = "From " + Students.class.getSimpleName();
+//                String hqlTeachers = "From " + Teachers.class.getSimpleName();
+//                List<Students> studentsList = session.createQuery(hqlStudents).getResultList();
+//                List<Teachers> teachersList = session.createQuery(hqlTeachers).getResultList();
+//
+//                boolean searched = false;
+//
+//
+//                for (Students students1 :studentsList){
+//
+//                    String comboBox = comboBox1.getSelectedItem().toString();
+//                    String student = students1.getName() + " - " + students1.getSurname() + "\n";
+//
+//
+//                    if (comboBox.equals(student))
+//                    {
+//                        SearcTextArea.setText(
+//                                "First Name  " + students1.getName() + "\n"
+//                                        + "Last Name  " + students1.getSurname() + "\n"
+//                                        + "Date of Birth  " + students1.getDateOfBirth() + "\n"
+//                                        + "Stipend  " + students1.getStipend() + "\n"
+//                        );
+//
+//                        System.out.println("Success!");
+//                        searched = true;
+//
+//                    }
+//                    else {
+//
+//
+//                        for (Teachers teachers :teachersList){
+//
+//                            String a = comboBox1.getSelectedItem().toString();
+//                            String b = teachers.getName() + " - " + teachers.getSurname() + "\n";
+//
+//                            if (a.equals(b))
+//                            {
+//                                SearcTextArea.setText(
+//                                        "First Name  " + teachers.getName() + "\n"
+//                                                + "Last Name  " + teachers.getSurname() + "\n"
+//                                                + "Date of Birth  " + teachers.getDateOfBirth() + "\n"
+//                                                + "Stipend  " + teachers.getSalary() + "\n"
+//                                );
+//
+//                                System.out.println("Success!");
+//                                searched = true;
+//                            }else {
+//                                searched = false;
+//                            }
+//
+//
+//                    }
+//
+//                }
+//
+//
+//
+//                }
+//
+//                if (searched == false) {
+//                    SearcTextArea.setText("NOT FOUND");
+//                }
+//
+//            }
+//
+//
+//        });
+//
+//        //Поиск людей в базе для редактирования
+//        SearchNameButton.addActionListener(new Action() {
+//            @Override
+//            public Object getValue(String key) {
+//                return null;
+//            }
+//
+//            @Override
+//            public void putValue(String key, Object value) {
+//
+//            }
+//
+//            @Override
+//            public void setEnabled(boolean b) {
+//
+//            }
+//
+//            @Override
+//            public boolean isEnabled() {
+//                return false;
+//            }
+//
+//            @Override
+//            public void addPropertyChangeListener(PropertyChangeListener listener) {
+//
+//            }
+//
+//            @Override
+//            public void removePropertyChangeListener(PropertyChangeListener listener) {
+//
+//            }
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//
+//                String hqlStudents = "From " + Students.class.getSimpleName();
+//                String hqlTeachers = "From " + Teachers.class.getSimpleName();
+//                List<Students> studentsEditList = session.createQuery(hqlStudents).getResultList();
+//                List<Teachers> teachersEditList = session.createQuery(hqlTeachers).getResultList();
+//                boolean searchProblem = true;
+//
+//                for (Students students : studentsEditList) {
+//
+//
+//                    if (Name.getText().toLowerCase(Locale.ROOT).equals(students.getName().toLowerCase(Locale.ROOT))) {
+//                        EditName.setText(students.getName());
+//                        EditLastName.setText(students.getSurname());
+//                        EditDateOfBirth.setText(students.getDateOfBirth().toString());
+//                        EditMoney.setText(String.valueOf(students.getStipend()));
+//                        searchProblem = false;
+//                    }
+//                    else {
+//                        for (Teachers teachers : teachersEditList) {
+//                            if (Name.getText().toLowerCase(Locale.ROOT).equals(teachers.getName().toLowerCase(Locale.ROOT))) {
+//                                EditName.setText(teachers.getName());
+//                                EditLastName.setText(teachers.getSurname());
+//                                EditDateOfBirth.setText(teachers.getDateOfBirth().toString());
+//                                EditMoney.setText(String.valueOf(teachers.getSalary()));
+//                                searchProblem = false;
+//                            } else {
+//                                problem = true;
+//                            }
+//                        }
+//
+//
+//                    }
+//
+//                }
+//                if( searchProblem == true)
+//                    JOptionPane.showMessageDialog(mainPanel, "NOT FOUND", "Error!", JOptionPane.ERROR_MESSAGE);
+//            }
+//
+//
+//
+//        });
+//
+//
+//    }
+//
+//    public JPanel getMainPanel(){
+//        return mainPanel;
+//   }
+//
+//}
+//
